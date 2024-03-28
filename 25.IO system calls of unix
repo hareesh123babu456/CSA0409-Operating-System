@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <dirent.h>
+
+int main() {
+    int fd, flags;
+    off_t offset;
+    struct stat file_stat;
+    struct dirent *dir_entry;
+    DIR *dir;
+
+    fd = open("example.txt", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    if (fd == -1) {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+    printf("File opened successfully\n");
+
+    if (fstat(fd, &file_stat) == -1) {
+        perror("Error getting file status");
+        exit(EXIT_FAILURE);
+    }
+    printf("File size: %lld bytes\n", (long long)file_stat.st_size);
+    printf("File permissions: %o\n", file_stat.st_mode & 0777);
+
+    
+    offset = lseek(fd, 0, SEEK_END);
+    if (offset == -1) {
+        perror("Error setting file offset");
+        exit(EXIT_FAILURE);
+    }
+    printf("File offset: %lld\n", (long long)offset);
+
+    
+    if (fchmod(fd, S_IRWXU | S_IRGRP | S_IROTH) == -1) {
+        perror("Error changing file permissions");
+        exit(EXIT_FAILURE);
+    }
+    printf("File permissions changed\n");
+
+    
+    char buffer[100];
+    lseek(fd, 0, SEEK_SET);
+    ssize_t bytes

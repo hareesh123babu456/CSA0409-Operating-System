@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+int main() {
+    int fd;
+    char buffer[100];
+
+    // Create a new file
+    fd = creat("example.txt", 0644);
+    if (fd == -1) {
+        perror("Error creating file");
+        exit(EXIT_FAILURE);
+    }
+    printf("File created successfully\n");
+
+    // Open the file for writing
+    fd = open("example.txt", O_WRONLY);
+    if (fd == -1) {
+        perror("Error opening file for writing");
+        exit(EXIT_FAILURE);
+    }
+    printf("File opened successfully for writing\n");
+
+    // Write data to the file
+    if (write(fd, "Hello, world!\n", 14) != 14) {
+        perror("Error writing to file");
+        exit(EXIT_FAILURE);
+    }
+    printf("Data written to file\n");
+
+    // Close the file
+    if (close(fd) == -1) {
+        perror("Error closing file");
+        exit(EXIT_FAILURE);
+    }
+    printf("File closed successfully\n");
+
+    // Open the file for reading
+    fd = open("example.txt", O_RDONLY);
+    if (fd == -1) {
+        perror("Error opening file for reading");
+        exit(EXIT_FAILURE);
+    }
+    printf("File opened successfully for reading\n");
+
+    // Read data from the file
+    if (read(fd, buffer, sizeof(buffer)) == -1) {
+        perror("Error reading from file");
+        exit(EXIT_FAILURE);
+    }
+    printf("Data read from file: %s", buffer);
+
+    // Close the file
+    if (close(fd) == -1) {
+        perror("Error closing file");
+        exit(EXIT_FAILURE);
+    }
+    printf("File closed successfully\n");
+
+    return 0;
+}

@@ -1,0 +1,89 @@
+#include <stdio.h>
+
+#define MAX_BLOCKS 100
+
+
+struct MemoryBlock {
+    int id;
+    int size;
+    int allocated;
+};
+
+
+void worstFit(struct MemoryBlock blocks[], int n, int processId, int processSize) {
+    int worstFitIdx = -1;
+    int worstFitSize = -1;
+
+    
+    for (int i = 0; i < n; i++) {
+        if (!blocks[i].allocated && blocks[i].size >= processSize) {
+            if (worstFitIdx == -1 || blocks[i].size > worstFitSize) {
+                worstFitIdx = i;
+                worstFitSize = blocks[i].size;
+            }
+        }
+    }
+
+    if (worstFitIdx != -1) {
+        blocks[worstFitIdx].allocated = 1;
+        printf("Process %d allocated to Block %d\n", processId, blocks[worstFitIdx].id);
+    } else {
+        printf("Cannot allocate memory to Process %d\n", processId);
+    }
+}
+
+void deallocate(struct MemoryBlock blocks[], int n, int processId) {
+    for (int i = 0; i < n; i++) {
+        if (blocks[i].id == processId) {
+            blocks[i].allocated = 0;
+            printf("Memory deallocated from Block %d\n", processId);
+            return;
+        }
+    }
+    printf("Process %d not found\n", processId);
+}
+
+int main() {
+    struct MemoryBlock blocks[MAX_BLOCKS];
+    int n, choice, processId, processSize;
+
+    
+    printf("Enter number of memory blocks: ");
+    scanf("%d", &n);
+
+    
+    printf("Enter memory block details (ID Size):\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d %d", &blocks[i].id, &blocks[i].size);
+        blocks[i].allocated = 0;
+    }
+
+    
+    do {
+        printf("\n1. Allocate Memory\n");
+        printf("2. Deallocate Memory\n");
+        printf("3. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter process ID and size to allocate: ");
+                scanf("%d %d", &processId, &processSize);
+                worstFit(blocks, n, processId, processSize);
+                break;
+            case 2:
+                printf("Enter process ID to deallocate: ");
+                scanf("%d", &processId);
+                deallocate(blocks, n, processId);
+                break;
+            case 3:
+                printf("Exiting...\n");
+                break;
+            default:
+                printf("Invalid choice\n");
+        }
+    } while (choice != 3);
+
+    return 0;
+}
